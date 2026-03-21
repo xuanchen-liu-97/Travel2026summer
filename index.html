@@ -25,20 +25,33 @@ h1{font-size:22px;font-weight:500;margin-bottom:4px}
 .card.selected{border:1.5px solid #1D9E75}
 .card-head{display:flex;justify-content:space-between;align-items:flex-start}
 .city-name{font-size:15px;font-weight:500}
-.country{font-size:12px;color:#6b6b64;margin-left:5px}
+.city-en{font-size:12px;color:#6b6b64;margin-left:4px}
+.country-zh{font-size:12px;color:#6b6b64}
+.country-en{font-size:11px;color:#9b9b91;margin-left:3px}
 .badges{display:flex;gap:5px;align-items:center;flex-shrink:0}
 .badge-pri{font-size:11px;padding:2px 7px;border-radius:4px}
 .pri-A{background:#EAF3DE;color:#3B6D11}
 .pri-B{background:#FAEEDA;color:#854F0B}
 .pri-C{background:#F1EFE8;color:#5F5E5A}
-.days{font-size:12px;color:#6b6b64}
+.days-badge{font-size:12px;color:#6b6b64}
 .cats{display:flex;flex-wrap:wrap;gap:4px}
 .cat-tag{font-size:11px;background:#f5f4ef;color:#6b6b64;padding:1px 7px;border-radius:4px}
 .desc{font-size:13px;color:#6b6b64;line-height:1.6}
-.btn{border:0.5px solid #c8c7be;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:13px;background:#fff;color:#1a1a18;transition:all .15s;width:100%;margin-top:2px}
-.btn:hover{background:#f5f4ef}
-.btn.added{background:#E1F5EE;color:#0F6E56;border-color:#5DCAA5}
-.btn.remove{color:#A32D2D;width:auto;padding:3px 10px}
+/* 景点预览 chips */
+.spot-preview{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.spot-chip{font-size:12px;background:#f5f4ef;color:#444;padding:2px 8px;border-radius:4px}
+.more-btn{font-size:12px;color:#6b6b64;border:none;background:none;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+/* 展开的景点详情 */
+.spot-detail{display:none;flex-direction:column;gap:5px;border-top:0.5px solid rgba(0,0,0,0.08);padding-top:8px;margin-top:2px}
+.spot-detail.open{display:flex}
+.spot-row{display:flex;gap:8px;align-items:baseline}
+.spot-name{font-size:13px;font-weight:500;min-width:100px;flex-shrink:0;color:#1a1a18}
+.spot-note{font-size:12px;color:#6b6b64;flex:1;line-height:1.5}
+/* 加入行程按钮 */
+.add-btn{border:0.5px solid #c8c7be;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:13px;background:#fff;color:#1a1a18;transition:all .15s;width:100%;margin-top:2px}
+.add-btn:hover{background:#f5f4ef}
+.add-btn.added{background:#E1F5EE;color:#0F6E56;border-color:#5DCAA5}
+/* 行程页 */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
 .stat{background:#f5f4ef;border-radius:8px;padding:12px 14px}
 .stat-label{font-size:12px;color:#6b6b64}
@@ -46,9 +59,11 @@ h1{font-size:22px;font-weight:500;margin-bottom:4px}
 .warn{background:#FAECE7;color:#993C1D;padding:8px 14px;border-radius:8px;font-size:13px;margin-bottom:16px}
 .region-head{font-size:13px;font-weight:500;color:#6b6b64;margin:16px 0 6px}
 .plan-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border:0.5px solid rgba(0,0,0,0.12);border-radius:8px;margin-bottom:6px}
-.plan-city{font-weight:500;flex:1}
-.plan-country{font-size:12px;color:#6b6b64;margin-left:6px}
+.plan-city{font-weight:500}
+.plan-city-en{font-size:12px;color:#9b9b91;margin-left:4px}
+.plan-country{font-size:12px;color:#6b6b64;margin-left:4px}
 .plan-days{font-size:13px;color:#6b6b64;min-width:30px;text-align:right}
+.remove-btn{border:0.5px solid #c8c7be;border-radius:6px;padding:3px 10px;cursor:pointer;font-size:12px;background:#fff;color:#A32D2D}
 .actions{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
 .action-btn{border:0.5px solid #c8c7be;border-radius:6px;padding:7px 16px;cursor:pointer;font-size:13px;background:#fff;color:#1a1a18}
 .action-btn:hover{background:#f5f4ef}
@@ -61,9 +76,8 @@ h1{font-size:22px;font-weight:500;margin-bottom:4px}
 </head>
 <body>
 <div class="wrap">
-  <h1>🗺 欧洲暑期行程规划</h1>
+  <h1>2026Summer-trip</h1>
   <p class="subtitle">浏览景点 → 加入行程 → 复制链接与同伴协作</p>
-
   <div class="tabs">
     <button class="tab active" onclick="switchTab('browse')">景点浏览</button>
     <button class="tab" id="tab-plan" onclick="switchTab('plan')">我的行程</button>
@@ -73,6 +87,8 @@ h1{font-size:22px;font-weight:500;margin-bottom:4px}
     <div class="filters">
       <div class="filter-label">按地区</div>
       <div class="pills" id="region-pills"></div>
+      <div class="filter-label">按国家</div>
+      <div class="pills" id="country-pills"></div>
       <div class="filter-label">按类型（可多选）</div>
       <div class="pills" id="cat-pills"></div>
     </div>
@@ -81,7 +97,7 @@ h1{font-size:22px;font-weight:500;margin-bottom:4px}
   </div>
 
   <div id="pane-plan" style="display:none">
-    <div class="note">选好景点后，点击「复制分享链接」，把链接发给同行的人，对方打开就能看到你的选择，可以继续添加或修改，再把新链接发回来，来回协作直到确定路线。</div>
+    <div class="note">选好景点后，点击「复制分享链接」，把链接发给同行的人，对方打开就能看到你的选择，可以继续添加或修改，再把新链接发回来协作。</div>
     <div class="actions">
       <button class="action-btn primary" onclick="copyLink()">🔗 复制分享链接</button>
       <button class="action-btn" onclick="copyText()">📋 复制行程文字</button>
@@ -95,153 +111,148 @@ h1{font-size:22px;font-weight:500;margin-bottom:4px}
 </div>
 <div class="toast" id="toast"></div>
 
+<!-- 城市数据从 data.js 加载，新增城市只需编辑该文件 -->
+<script src="data.js"></script>
 <script>
-const DATA = [
-  {id:1,city:"爱丁堡",country:"英国",region:"英国",days:3,cats:["历史","自然"],unique:"中世纪古堡矗立城中心、亚瑟王座死火山步行可达、苏格兰威士忌文化；英国境内最具异域感的城市",pri:"A"},
-  {id:2,city:"科茨沃尔德",country:"英国",region:"英国",days:2,cats:["自然","乡村"],unique:"蜂蜜色石灰石村庄，英格兰最典型的田园牧歌景观，伦敦开车2小时可达",pri:"B"},
-  {id:3,city:"巴斯",country:"英国",region:"英国",days:1,cats:["历史","建筑"],unique:"全英唯一保存完好的罗马浴场遗址 + 乔治亚风格新月形建筑，可与科茨沃尔德联排",pri:"B"},
-  {id:4,city:"湖区",country:"英国",region:"英国",days:2,cats:["自然"],unique:"英格兰最美湖山风光，华兹华斯与彼得兔的故乡",pri:"B"},
-  {id:5,city:"康沃尔",country:"英国",region:"英国",days:2,cats:["自然","海岸"],unique:"英格兰最西端的荒野悬崖海岸，锡矿遗址UNESCO，凯尔特文化",pri:"C"},
-  {id:6,city:"波尔图",country:"葡萄牙",region:"伊比利亚",days:3,cats:["文化","建筑","美食"],unique:"葡式彩色瓷砖立面、杜罗河酒庄、世界最美书店之一Livraria Lello，浓郁南欧市井气息",pri:"A"},
-  {id:7,city:"里斯本",country:"葡萄牙",region:"伊比利亚",days:3,cats:["文化","音乐","建筑"],unique:"全球仅存的城市叮当车爬坡系统、Fado忧郁民谣文化、贝伦塔与大航海时代历史",pri:"A"},
-  {id:8,city:"巴塞罗那",country:"西班牙",region:"伊比利亚",days:4,cats:["建筑","艺术","海滩"],unique:"高迪建筑宇宙（圣家堂/米拉之家/桂尔公园）——全球唯一，加泰罗尼亚文化与地中海海滩并存",pri:"A"},
-  {id:9,city:"塞维利亚",country:"西班牙",region:"伊比利亚",days:3,cats:["历史","文化","音乐"],unique:"弗拉门戈发源地、摩尔风格阿尔卡萨尔宫殿、欧洲最大哥特式大教堂",pri:"A"},
-  {id:10,city:"马德里",country:"西班牙",region:"伊比利亚",days:3,cats:["艺术","文化"],unique:"普拉多博物馆 + 索菲亚王后艺术中心（毕加索《格尔尼卡》原作），世界顶级艺术轴线",pri:"A"},
-  {id:11,city:"格拉纳达",country:"西班牙",region:"伊比利亚",days:2,cats:["历史","建筑"],unique:"阿尔罕布拉宫——全球保存最完好的伊斯兰宫殿，摩尔文明遗珠",pri:"A"},
-  {id:12,city:"巴黎",country:"法国",region:"西欧",days:5,cats:["艺术","文化","建筑","美食"],unique:"卢浮宫/奥赛博物馆/塞纳河/蒙马特——文明的蒸馏。无论去多少次层次感都挖不完",pri:"A"},
-  {id:13,city:"科尔马",country:"法国",region:"西欧",days:1,cats:["建筑","文化"],unique:"阿尔萨斯中世纪木框架小镇，宫崎骏《哈尔的移动城堡》灵感原型之一",pri:"B"},
-  {id:14,city:"普罗旺斯",country:"法国",region:"西欧",days:2,cats:["自然","文化"],unique:"7月薰衣草花海正值旺季！罗马遗址与法式乡村市集，梵高的色彩灵感之地",pri:"B"},
-  {id:15,city:"卢瓦尔河谷",country:"法国",region:"西欧",days:2,cats:["历史","建筑"],unique:"欧洲最密集的文艺复兴城堡群（UNESCO），骑行穿越城堡体验独一无二",pri:"B"},
-  {id:16,city:"阿姆斯特丹",country:"荷兰",region:"西欧",days:3,cats:["艺术","建筑","文化"],unique:"梵高博物馆+国立博物馆，17世纪黄金时代运河屋，全球最有特色的都市骑行文化",pri:"A"},
-  {id:17,city:"布鲁日",country:"比利时",region:"西欧",days:2,cats:["历史","建筑"],unique:"比阿姆斯特丹更原始的中世纪运河城市（UNESCO），比利时啤酒与巧克力文化",pri:"B"},
-  {id:18,city:"罗马",country:"意大利",region:"意大利",days:4,cats:["历史","建筑","艺术"],unique:"斗兽场/罗马广场/梵蒂冈——人类文明两千年最密集的露天博物馆",pri:"A"},
-  {id:19,city:"威尼斯",country:"意大利",region:"意大利",days:3,cats:["建筑","文化"],unique:"118个小岛、无汽车的水上城市，这件事在地球上只有这一处",pri:"A"},
-  {id:20,city:"多洛米蒂",country:"意大利",region:"意大利",days:4,cats:["自然"],unique:"白云石垂直峭壁+高山牧场（UNESCO）——与普通阿尔卑斯山完全不同的外星地貌，徒步天堂",pri:"A"},
-  {id:21,city:"佛罗伦萨",country:"意大利",region:"意大利",days:3,cats:["艺术","建筑","历史"],unique:"文艺复兴发源地：乌菲兹美术馆（波提切利）、米开朗基罗《大卫》原作",pri:"A"},
-  {id:22,city:"五渔村",country:"意大利",region:"意大利",days:2,cats:["自然","海岸","建筑"],unique:"利古里亚海崖上五座彩色渔村（UNESCO），只可步行或乘船，地中海最原始海岸面貌",pri:"A"},
-  {id:23,city:"阿马尔菲海岸",country:"意大利",region:"意大利",days:2,cats:["自然","海岸"],unique:"悬崖与地中海之间最戏剧性的海岸线（UNESCO），波西塔诺小镇视觉冲击极强",pri:"B"},
-  {id:24,city:"布拉格",country:"捷克",region:"中欧",days:3,cats:["历史","建筑","文化"],unique:"保存最完好的中世纪城市核心（二战几乎未受损），哥特/巴洛克/新艺术风格并存",pri:"A"},
-  {id:25,city:"布达佩斯",country:"匈牙利",region:"中欧",days:3,cats:["建筑","文化","温泉"],unique:"多瑙河两岸壮丽建筑（UNESCO）、塞切尼温泉浴场——泡温泉文化在欧洲独一份",pri:"A"},
-  {id:26,city:"哈尔施塔特",country:"奥地利",region:"中欧",days:1,cats:["自然","建筑"],unique:"阿尔卑斯湖畔盐矿小镇（UNESCO），中国某省曾原样复制此地，一天足矣",pri:"B"},
-  {id:27,city:"萨尔茨堡",country:"奥地利",region:"中欧",days:2,cats:["音乐","历史","建筑"],unique:"莫扎特出生地、《音乐之声》拍摄地，可与哈尔施塔特联排",pri:"B"},
-  {id:28,city:"少女峰地区",country:"瑞士",region:"中欧",days:2,cats:["自然"],unique:"欧洲屋脊（3454m），登山列车直达冰川，格林德瓦尔德峡谷观景台极为震撼",pri:"B"},
-  {id:29,city:"梅黛奥拉",country:"希腊",region:"南欧",days:1,cats:["自然","历史","宗教"],unique:"修道院建在垂直岩柱顶端（UNESCO）——地球上存在感最强的建筑之一，值得专程前往",pri:"A"},
-  {id:30,city:"雅典",country:"希腊",region:"南欧",days:3,cats:["历史","建筑"],unique:"帕特农神庙、古阿哥拉——西方文明发源地，两千五百年文明活遗址",pri:"A"},
-  {id:31,city:"圣托里尼",country:"希腊",region:"南欧",days:3,cats:["自然","建筑","海岸"],unique:"火山口内白蓝建筑+爱琴海日落，全球最具辨识度的景观之一",pri:"B"},
-  {id:32,city:"杜布罗夫尼克",country:"克罗地亚",region:"南欧",days:2,cats:["历史","建筑","海岸"],unique:"完整中世纪城墙环绕的老城（UNESCO），亚得里亚海的珍珠，《权游》君临城取景地",pri:"B"},
-  {id:33,city:"普利特维采湖",country:"克罗地亚",region:"南欧",days:1,cats:["自然"],unique:"16个梯级瀑布与翡翠湖泊（UNESCO），自然界最像幻境的景色",pri:"B"},
-];
-
 const REGIONS = ["全部","英国","伊比利亚","西欧","意大利","中欧","南欧"];
 const CATS = ["艺术","历史","自然","建筑","文化","海岸","音乐","美食","乡村","温泉","宗教"];
 const PRI_LABEL = {A:"必去",B:"强推",C:"备选"};
 const REGION_ORDER = ["英国","伊比利亚","西欧","意大利","中欧","南欧"];
+const COUNTRIES = [...new Map(DATA.map(d => [d.country, {zh:d.country, en:d.countryEn}])).values()];
 
-let selRegion = "全部";
-let selCats = [];
-let selected = new Set();
-let currentTab = "browse";
+let selRegion = "全部", selCountry = "全部", selCats = [], selected = new Set(), currentTab = "browse";
 
 function loadFromHash() {
   try {
     const h = location.hash.replace('#','');
     if (!h) return;
-    const params = new URLSearchParams(h);
-    const ids = params.get('s');
+    const p = new URLSearchParams(h);
+    const ids = p.get('s');
     if (ids) ids.split(',').filter(Boolean).forEach(i => selected.add(parseInt(i)));
   } catch(e) {}
 }
 
 function updateHash() {
   const ids = [...selected].join(',');
-  history.replaceState(null, '', ids ? '#s=' + ids : location.pathname);
+  history.replaceState(null,'', ids ? '#s='+ids : location.pathname);
 }
 
 function switchTab(t) {
   currentTab = t;
-  document.querySelectorAll('.tab').forEach((el,i) => el.classList.toggle('active', (i===0 && t==='browse') || (i===1 && t==='plan')));
+  document.querySelectorAll('.tab').forEach((el,i) => el.classList.toggle('active',(i===0&&t==='browse')||(i===1&&t==='plan')));
   document.getElementById('pane-browse').style.display = t==='browse' ? '' : 'none';
   document.getElementById('pane-plan').style.display = t==='plan' ? '' : 'none';
   if (t==='plan') renderPlan();
 }
 
 function renderRegionPills() {
-  const c = document.getElementById('region-pills');
-  c.innerHTML = REGIONS.map(r => `<button class="pill${r===selRegion?' active':''}" onclick="setRegion('${r}')">${r}</button>`).join('');
+  document.getElementById('region-pills').innerHTML = REGIONS.map(r =>
+    `<button class="pill${r===selRegion?' active':''}" onclick="setRegion('${r}')">${r}</button>`
+  ).join('');
+}
+
+function renderCountryPills() {
+  document.getElementById('country-pills').innerHTML =
+    `<button class="pill${'全部'===selCountry?' active':''}" onclick="setCountry('全部')">全部</button>` +
+    COUNTRIES.map(c =>
+      `<button class="pill${c.zh===selCountry?' active':''}" onclick="setCountry('${c.zh}')">${c.zh} ${c.en}</button>`
+    ).join('');
 }
 
 function renderCatPills() {
-  const c = document.getElementById('cat-pills');
-  c.innerHTML = CATS.map(cat => `<button class="pill${selCats.includes(cat)?' active':''}" onclick="toggleCat('${cat}')">${cat}</button>`).join('') +
-    (selCats.length ? `<button class="pill clear" onclick="clearCats()">× 清除</button>` : '');
+  document.getElementById('cat-pills').innerHTML = CATS.map(c =>
+    `<button class="pill${selCats.includes(c)?' active':''}" onclick="toggleCat('${c}')">${c}</button>`
+  ).join('') + (selCats.length ? `<button class="pill clear" onclick="clearCats()">× 清除</button>` : '');
 }
 
-function setRegion(r) { selRegion=r; renderRegionPills(); renderCards(); }
-function toggleCat(c) { selCats = selCats.includes(c) ? selCats.filter(x=>x!==c) : [...selCats,c]; renderCatPills(); renderCards(); }
+function setRegion(r) { selRegion=r; if(r!=='全部') selCountry='全部'; renderRegionPills(); renderCountryPills(); renderCards(); }
+function setCountry(c) { selCountry=c; if(c!=='全部') selRegion='全部'; renderRegionPills(); renderCountryPills(); renderCards(); }
+function toggleCat(c) { selCats=selCats.includes(c)?selCats.filter(x=>x!==c):[...selCats,c]; renderCatPills(); renderCards(); }
 function clearCats() { selCats=[]; renderCatPills(); renderCards(); }
 
-function filtered() {
+function getFiltered() {
   return DATA.filter(d => {
-    if (selRegion !== "全部" && d.region !== selRegion) return false;
-    if (selCats.length && !selCats.some(c => d.cats.includes(c))) return false;
+    if (selRegion!=='全部' && d.region!==selRegion) return false;
+    if (selCountry!=='全部' && d.country!==selCountry) return false;
+    if (selCats.length && !selCats.some(c=>d.cats.includes(c))) return false;
     return true;
   });
 }
 
 function renderCards() {
-  const items = filtered();
+  const items = getFiltered();
   document.getElementById('count-bar').textContent = `共 ${items.length} 处景点`;
   document.getElementById('cards').innerHTML = items.map(d => {
     const isSel = selected.has(d.id);
-    return `<div class="card${isSel?' selected':''}">
+    const previewChips = (d.spotsPreview||[]).map(s=>`<span class="spot-chip">${s}</span>`).join('');
+    const detailRows = (d.spotsDetail||[]).map(s=>`<div class="spot-row"><span class="spot-name">${s.name}</span><span class="spot-note">${s.note}</span></div>`).join('');
+    return `<div class="card${isSel?' selected':''}" id="card-${d.id}">
       <div class="card-head">
-        <div><span class="city-name">${d.city}</span><span class="country">${d.country}</span></div>
+        <div>
+          <span class="city-name">${d.city}</span><span class="city-en">${d.cityEn}</span><br>
+          <span class="country-zh">${d.country}</span><span class="country-en">${d.countryEn}</span>
+        </div>
         <div class="badges">
           <span class="badge-pri pri-${d.pri}">${PRI_LABEL[d.pri]}</span>
-          <span class="days">${d.days}天</span>
+          <span class="days-badge">${d.days}天</span>
         </div>
       </div>
       <div class="cats">${d.cats.map(c=>`<span class="cat-tag">${c}</span>`).join('')}</div>
       <p class="desc">${d.unique}</p>
-      <button class="btn${isSel?' added':''}" onclick="toggle(${d.id})">${isSel?'✓ 已加入行程':'+ 加入行程'}</button>
+      <div class="spot-preview">
+        ${previewChips}
+        ${detailRows ? `<button class="more-btn" onclick="toggleDetail(${d.id},this)">+ 景点详情</button>` : ''}
+      </div>
+      <div class="spot-detail" id="detail-${d.id}">${detailRows}</div>
+      <button class="add-btn${isSel?' added':''}" onclick="toggle(${d.id})">${isSel?'✓ 已加入行程':'+ 加入行程'}</button>
     </div>`;
   }).join('');
   updatePlanTab();
 }
 
+function toggleDetail(id, btn) {
+  const el = document.getElementById('detail-'+id);
+  const open = el.classList.toggle('open');
+  btn.textContent = open ? '- 收起' : '+ 景点详情';
+}
+
 function updatePlanTab() {
-  const n = selected.size;
   const days = [...selected].reduce((s,id)=>{ const d=DATA.find(x=>x.id===id); return d?s+d.days:s; },0);
-  document.getElementById('tab-plan').textContent = `我的行程（${n}处 · 约${days}天）`;
+  document.getElementById('tab-plan').textContent = `我的行程（${selected.size}处 · 约${days}天）`;
 }
 
 function toggle(id) {
   selected.has(id) ? selected.delete(id) : selected.add(id);
   updateHash();
-  renderCards();
+  const card = document.getElementById('card-'+id);
+  if (card) {
+    card.classList.toggle('selected', selected.has(id));
+    card.querySelector('.add-btn').className = 'add-btn' + (selected.has(id)?' added':'');
+    card.querySelector('.add-btn').textContent = selected.has(id) ? '✓ 已加入行程' : '+ 加入行程';
+  }
+  updatePlanTab();
   if (currentTab==='plan') renderPlan();
 }
 
-function clearAll() { if(confirm('确认清空所有已选景点？')) { selected.clear(); updateHash(); renderCards(); renderPlan(); } }
+function clearAll() {
+  if (confirm('确认清空所有已选景点？')) { selected.clear(); updateHash(); renderCards(); renderPlan(); }
+}
 
 function renderPlan() {
-  const items = DATA.filter(d => selected.has(d.id));
+  const items = DATA.filter(d=>selected.has(d.id));
   const totalDays = items.reduce((s,d)=>s+d.days,0);
   document.getElementById('stats').innerHTML = [
-    ["景点数量", items.length + " 处"],
-    ["合计天数", "约 " + totalDays + " 天"],
-    ["剩余天数", "约 " + Math.max(0, 30-totalDays) + " 天"]
+    ["景点数量", items.length+" 处"],
+    ["合计天数", "约 "+totalDays+" 天"],
+    ["剩余天数", "约 "+Math.max(0,30-totalDays)+" 天"]
   ].map(([l,v])=>`<div class="stat"><div class="stat-label">${l}</div><div class="stat-val">${v}</div></div>`).join('');
-
   const warn = document.getElementById('warn-over');
-  if (totalDays > 30) { warn.style.display=''; warn.textContent=`⚠ 当前选择合计 ${totalDays} 天，超出1个月预算，建议精简行程。`; }
+  if (totalDays>30) { warn.style.display=''; warn.textContent=`⚠ 当前选择合计 ${totalDays} 天，超出1个月预算，建议精简行程。`; }
   else warn.style.display='none';
-
   const empty = document.getElementById('plan-empty');
   const list = document.getElementById('plan-list');
   if (!items.length) { empty.style.display=''; list.innerHTML=''; return; }
   empty.style.display='none';
-
   let html='';
   REGION_ORDER.forEach(r => {
     const ri = items.filter(d=>d.region===r);
@@ -249,10 +260,10 @@ function renderPlan() {
     html += `<div class="region-head">${r}</div>`;
     ri.forEach(d => {
       html += `<div class="plan-row">
-        <div><span class="plan-city">${d.city}</span><span class="plan-country">${d.country}</span></div>
+        <div style="flex:1"><span class="plan-city">${d.city}</span><span class="plan-city-en">${d.cityEn}</span><span class="plan-country">${d.country} ${d.countryEn}</span></div>
         <span class="badge-pri pri-${d.pri}" style="font-size:11px;padding:2px 7px;border-radius:4px">${PRI_LABEL[d.pri]}</span>
         <span class="plan-days">${d.days}天</span>
-        <button class="btn remove" onclick="toggle(${d.id})">移除</button>
+        <button class="remove-btn" onclick="toggle(${d.id})">移除</button>
       </div>`;
     });
   });
@@ -261,36 +272,35 @@ function renderPlan() {
 
 function copyLink() {
   const url = location.href;
-  navigator.clipboard.writeText(url).then(()=>toast('链接已复制，发给同行的人吧！')).catch(()=>{
-    prompt('复制以下链接：', url);
-  });
+  navigator.clipboard.writeText(url).then(()=>toast('链接已复制，发给同行的人吧！')).catch(()=>prompt('复制以下链接：',url));
 }
 
 function copyText() {
   const items = DATA.filter(d=>selected.has(d.id));
   if (!items.length) { toast('还没有选择任何景点'); return; }
   const totalDays = items.reduce((s,d)=>s+d.days,0);
-  let text = `🗺 欧洲暑期行程（约${totalDays}天）\n\n`;
+  let text = `🗺 2026Summer-trip（约${totalDays}天）\n\n`;
   REGION_ORDER.forEach(r => {
     const ri = items.filter(d=>d.region===r);
     if (!ri.length) return;
     text += `【${r}】\n`;
-    ri.forEach(d => text += `  · ${d.city}（${d.country}）${d.days}天 — ${PRI_LABEL[d.pri]}\n`);
+    ri.forEach(d => text += `  · ${d.city} (${d.cityEn})，${d.country}，${d.days}天 — ${PRI_LABEL[d.pri]}\n`);
     text += '\n';
   });
   text += `分享链接：${location.href}`;
-  navigator.clipboard.writeText(text).then(()=>toast('行程文字已复制！')).catch(()=>{ prompt('复制以下内容：',text); });
+  navigator.clipboard.writeText(text).then(()=>toast('行程文字已复制！')).catch(()=>prompt('复制：',text));
 }
 
 function toast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'), 2500);
+  setTimeout(()=>el.classList.remove('show'),2500);
 }
 
 loadFromHash();
 renderRegionPills();
+renderCountryPills();
 renderCatPills();
 renderCards();
 </script>
