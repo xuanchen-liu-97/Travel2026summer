@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2026 Summer Trip</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB",sans-serif;background:#f5f4ef;color:#1a1a18;font-size:15px;line-height:1.6}
@@ -29,17 +30,14 @@ h1{font-size:22px;font-weight:500;margin-bottom:4px}
 .country-zh{font-size:12px;color:#6b6b64}
 .country-en{font-size:11px;color:#9b9b91;margin-left:3px}
 .badges{display:flex;gap:6px;align-items:center;flex-shrink:0}
-/* pri 下拉 */
 .pri-select{font-size:11px;padding:2px 6px;border-radius:4px;border:none;cursor:pointer;-webkit-appearance:none;appearance:none;font-family:inherit;outline:none}
 .pri-select.pri-A{background:#EAF3DE;color:#3B6D11}
 .pri-select.pri-B{background:#FAEEDA;color:#854F0B}
 .pri-select.pri-C{background:#F1EFE8;color:#5F5E5A}
-/* days +/- */
 .days-ctrl{display:flex;align-items:center;gap:3px}
 .days-ctrl button{width:18px;height:18px;border:0.5px solid #c8c7be;border-radius:3px;background:#fff;cursor:pointer;font-size:13px;line-height:1;color:#1a1a18;padding:0;display:flex;align-items:center;justify-content:center}
 .days-ctrl button:hover{background:#f5f4ef}
 .days-val{font-size:12px;color:#6b6b64;min-width:28px;text-align:center}
-/* 其他卡片内容 */
 .cats{display:flex;flex-wrap:wrap;gap:4px}
 .cat-tag{font-size:11px;background:#f5f4ef;color:#6b6b64;padding:1px 7px;border-radius:4px}
 .desc{font-size:13px;color:#6b6b64;line-height:1.6}
@@ -71,10 +69,22 @@ h1{font-size:22px;font-weight:500;margin-bottom:4px}
 .action-btn{border:0.5px solid #c8c7be;border-radius:6px;padding:7px 16px;cursor:pointer;font-size:13px;background:#fff;color:#1a1a18}
 .action-btn:hover{background:#f5f4ef}
 .action-btn.primary{background:#1a1a18;color:#fff;border-color:#1a1a18}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a18;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .3s;z-index:99}
+/* 地图 */
+#map-wrap{margin-bottom:24px}
+#map-wrap .section-label{font-size:12px;color:#6b6b64;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.map-legend{display:flex;gap:12px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:#6b6b64}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.legend-dot.all{background:#c8c7be;border:1.5px solid #888780}
+.legend-dot.sel{background:#1D9E75;border:1.5px solid #0F6E56}
+#europe-map{height:400px;border-radius:10px;border:0.5px solid rgba(0,0,0,0.12);background:#e8e4d9}
+/* toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a18;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .3s;z-index:999}
 .toast.show{opacity:1}
 .empty{color:#6b6b64;font-size:14px;padding:20px 0}
 .note{font-size:12px;color:#6b6b64;background:#f5f4ef;border-radius:6px;padding:8px 12px;margin-bottom:16px}
+/* Leaflet tooltip 样式覆盖 */
+.leaflet-tooltip{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;font-size:12px;padding:3px 8px;border-radius:5px;border:0.5px solid rgba(0,0,0,0.12);box-shadow:none;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -108,12 +118,26 @@ h1{font-size:22px;font-weight:500;margin-bottom:4px}
     </div>
     <div class="stats" id="stats"></div>
     <div id="warn-over" class="warn" style="display:none"></div>
+
+    <!-- 地图 -->
+    <div id="map-wrap">
+      <div class="section-label">
+        地图总览
+        <div class="map-legend">
+          <div class="legend-item"><div class="legend-dot all"></div>所有候选城市</div>
+          <div class="legend-item"><div class="legend-dot sel"></div>已加入行程</div>
+        </div>
+      </div>
+      <div id="europe-map"></div>
+    </div>
+
     <div id="plan-list"></div>
     <div id="plan-empty" class="empty" style="display:none">还没有加入任何景点。切换到「景点浏览」，点击「加入行程」开始规划。</div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="data.js"></script>
 <script>
 const REGIONS = ["全部","英国","伊比利亚","西欧","意大利","中欧","南欧"];
@@ -124,14 +148,47 @@ const COUNTRIES = [...new Map(DATA.map(d=>[d.country,{zh:d.country,en:d.countryE
 
 let selRegion="全部", selCountry="全部", selCats=[], currentTab="browse";
 let selected = new Set();
-let priOverrides = new Map();   // id -> 'A'|'B'|'C'
-let daysOverrides = new Map();  // id -> number
+let priOverrides = new Map();
+let daysOverrides = new Map();
 
-// ── 获取当前有效值（优先使用用户覆盖值）─────────────────
-function getPri(d)  { return priOverrides.has(d.id)  ? priOverrides.get(d.id)  : d.pri; }
-function getDays(d) { return daysOverrides.has(d.id) ? daysOverrides.get(d.id) : d.days; }
+// ── 地图 ──────────────────────────────────────────────
+let mapInstance = null;
+let leafletMarkers = {};
 
-// ── URL hash 编解码（分享时携带所有状态）────────────────
+const STYLE_DEFAULT = { radius:6, fillColor:"#c8c7be", color:"#888780", weight:1.5, fillOpacity:0.85 };
+const STYLE_SELECTED = { radius:9, fillColor:"#1D9E75", color:"#0F6E56", weight:2, fillOpacity:0.95 };
+
+function initMap() {
+  if (mapInstance) { mapInstance.invalidateSize(); return; }
+  mapInstance = L.map('europe-map', { center:[48,12], zoom:4, zoomControl:true });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom:12
+  }).addTo(mapInstance);
+  DATA.forEach(d => {
+    if (!d.coords) return;
+    const isSel = selected.has(d.id);
+    const m = L.circleMarker(d.coords, isSel ? STYLE_SELECTED : STYLE_DEFAULT)
+      .addTo(mapInstance)
+      .bindTooltip(`<b>${d.city}</b> ${d.cityEn}`, { direction:'top', offset:[0,-4] });
+    if (isSel) m.bringToFront();
+    leafletMarkers[d.id] = m;
+  });
+}
+
+function updateMarker(id) {
+  const m = leafletMarkers[id];
+  if (!m) return;
+  const isSel = selected.has(id);
+  m.setStyle(isSel ? STYLE_SELECTED : STYLE_DEFAULT);
+  isSel ? m.bringToFront() : m.bringToBack();
+}
+
+function updateAllMarkers() {
+  Object.keys(leafletMarkers).forEach(id => updateMarker(+id));
+}
+
+// ── URL hash ───────────────────────────────────────────
 function updateHash() {
   const s = [...selected].join(',');
   const p = [...priOverrides.entries()].map(([id,v])=>id+'-'+v).join(',');
@@ -153,58 +210,63 @@ function loadFromHash() {
   } catch(e) {}
 }
 
-// ── 交互：pri 下拉、days 加减 ────────────────────────
+// ── 有效值 ────────────────────────────────────────────
+function getPri(d)  { return priOverrides.has(d.id)  ? priOverrides.get(d.id)  : d.pri; }
+function getDays(d) { return daysOverrides.has(d.id) ? daysOverrides.get(d.id) : d.days; }
+
+// ── 交互 ──────────────────────────────────────────────
 function setPri(id, sel) {
   priOverrides.set(id, sel.value);
   sel.className = 'pri-select pri-'+sel.value;
-  updateHash();
-  updatePlanTab();
+  updateHash(); updatePlanTab();
   if (currentTab==='plan') renderPlan();
 }
 
 function adjDays(id, delta) {
   const d = DATA.find(x=>x.id===id);
-  const cur = getDays(d);
-  const next = Math.max(1, cur+delta);
+  const next = Math.max(1, getDays(d)+delta);
   daysOverrides.set(id, next);
   const el = document.getElementById('days-'+id);
   if (el) el.textContent = next+'天';
-  updateHash();
-  updatePlanTab();
+  updateHash(); updatePlanTab();
   if (currentTab==='plan') renderPlan();
 }
 
-// ── 筛选 ──────────────────────────────────────────────
 function switchTab(t) {
-  currentTab=t;
+  currentTab = t;
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='browse')||(i===1&&t==='plan')));
-  document.getElementById('pane-browse').style.display=t==='browse'?'':'none';
-  document.getElementById('pane-plan').style.display=t==='plan'?'':'none';
-  if (t==='plan') renderPlan();
+  document.getElementById('pane-browse').style.display = t==='browse' ? '' : 'none';
+  document.getElementById('pane-plan').style.display  = t==='plan'   ? '' : 'none';
+  if (t==='plan') {
+    renderPlan();
+    // 延迟初始化确保容器已可见
+    setTimeout(() => { initMap(); updateAllMarkers(); }, 80);
+  }
 }
 
+// ── 筛选 pills ────────────────────────────────────────
 function renderRegionPills() {
-  document.getElementById('region-pills').innerHTML=REGIONS.map(r=>
+  document.getElementById('region-pills').innerHTML = REGIONS.map(r=>
     `<button class="pill${r===selRegion?' active':''}" onclick="setRegion('${r}')">${r}</button>`
   ).join('');
 }
 function renderCountryPills() {
-  document.getElementById('country-pills').innerHTML=
+  document.getElementById('country-pills').innerHTML =
     `<button class="pill${'全部'===selCountry?' active':''}" onclick="setCountry('全部')">全部</button>`+
     COUNTRIES.map(c=>`<button class="pill${c.zh===selCountry?' active':''}" onclick="setCountry('${c.zh}')">${c.zh} ${c.en}</button>`).join('');
 }
 function renderCatPills() {
-  document.getElementById('cat-pills').innerHTML=CATS.map(c=>
+  document.getElementById('cat-pills').innerHTML = CATS.map(c=>
     `<button class="pill${selCats.includes(c)?' active':''}" onclick="toggleCat('${c}')">${c}</button>`
   ).join('')+(selCats.length?`<button class="pill clear" onclick="clearCats()">× 清除</button>`:'');
 }
 
-function setRegion(r){ selRegion=r; if(r!=='全部') selCountry='全部'; renderRegionPills(); renderCountryPills(); renderCards(); }
-function setCountry(c){ selCountry=c; if(c!=='全部') selRegion='全部'; renderRegionPills(); renderCountryPills(); renderCards(); }
-function toggleCat(c){ selCats=selCats.includes(c)?selCats.filter(x=>x!==c):[...selCats,c]; renderCatPills(); renderCards(); }
-function clearCats(){ selCats=[]; renderCatPills(); renderCards(); }
+function setRegion(r)  { selRegion=r; if(r!=='全部') selCountry='全部'; renderRegionPills(); renderCountryPills(); renderCards(); }
+function setCountry(c) { selCountry=c; if(c!=='全部') selRegion='全部'; renderRegionPills(); renderCountryPills(); renderCards(); }
+function toggleCat(c)  { selCats=selCats.includes(c)?selCats.filter(x=>x!==c):[...selCats,c]; renderCatPills(); renderCards(); }
+function clearCats()   { selCats=[]; renderCatPills(); renderCards(); }
 
-function getFiltered(){
+function getFiltered() {
   return DATA.filter(d=>{
     if(selRegion!=='全部'&&d.region!==selRegion) return false;
     if(selCountry!=='全部'&&d.country!==selCountry) return false;
@@ -213,14 +275,13 @@ function getFiltered(){
   });
 }
 
-// ── 卡片渲染 ──────────────────────────────────────────
-function renderCards(){
-  const items=getFiltered();
-  document.getElementById('count-bar').textContent=`共 ${items.length} 处景点`;
-  document.getElementById('cards').innerHTML=items.map(d=>{
-    const isSel=selected.has(d.id);
-    const pri=getPri(d), days=getDays(d);
-    const priSelect=`<select class="pri-select pri-${pri}" onchange="setPri(${d.id},this)">
+// ── 卡片 ──────────────────────────────────────────────
+function renderCards() {
+  const items = getFiltered();
+  document.getElementById('count-bar').textContent = `共 ${items.length} 处景点`;
+  document.getElementById('cards').innerHTML = items.map(d=>{
+    const isSel=selected.has(d.id), pri=getPri(d), days=getDays(d);
+    const priSel=`<select class="pri-select pri-${pri}" onchange="setPri(${d.id},this)">
       <option value="A"${pri==='A'?' selected':''}>必去</option>
       <option value="B"${pri==='B'?' selected':''}>推荐</option>
       <option value="C"${pri==='C'?' selected':''}>备选</option>
@@ -238,7 +299,7 @@ function renderCards(){
           <span class="city-name">${d.city}</span><span class="city-en">${d.cityEn}</span><br>
           <span class="country-zh">${d.country}</span><span class="country-en">${d.countryEn}</span>
         </div>
-        <div class="badges">${priSelect}${daysCtrl}</div>
+        <div class="badges">${priSel}${daysCtrl}</div>
       </div>
       <div class="cats">${d.cats.map(c=>`<span class="cat-tag">${c}</span>`).join('')}</div>
       <p class="desc">${d.unique}</p>
@@ -253,62 +314,65 @@ function renderCards(){
   updatePlanTab();
 }
 
-function toggleDetail(id,btn){
-  const el=document.getElementById('detail-'+id);
-  const open=el.classList.toggle('open');
-  btn.textContent=open?'- 收起':'+ 景点详情';
+function toggleDetail(id, btn) {
+  const el = document.getElementById('detail-'+id);
+  const open = el.classList.toggle('open');
+  btn.textContent = open ? '- 收起' : '+ 景点详情';
 }
 
-function updatePlanTab(){
+function updatePlanTab() {
   const days=[...selected].reduce((s,id)=>{ const d=DATA.find(x=>x.id===id); return d?s+getDays(d):s; },0);
-  document.getElementById('tab-plan').textContent=`我的行程（${selected.size}处 · 约${days}天）`;
+  document.getElementById('tab-plan').textContent = `我的行程（${selected.size}处 · 约${days}天）`;
 }
 
-function toggle(id){
-  selected.has(id)?selected.delete(id):selected.add(id);
+function toggle(id) {
+  selected.has(id) ? selected.delete(id) : selected.add(id);
   updateHash();
-  const card=document.getElementById('card-'+id);
-  if(card){
-    card.classList.toggle('selected',selected.has(id));
-    const btn=card.querySelector('.add-btn');
-    btn.className='add-btn'+(selected.has(id)?' added':'');
-    btn.textContent=selected.has(id)?'✓ 已加入行程':'+ 加入行程';
+  // 更新卡片样式
+  const card = document.getElementById('card-'+id);
+  if (card) {
+    card.classList.toggle('selected', selected.has(id));
+    const btn = card.querySelector('.add-btn');
+    btn.className = 'add-btn'+(selected.has(id)?' added':'');
+    btn.textContent = selected.has(id) ? '✓ 已加入行程' : '+ 加入行程';
   }
+  // 实时更新地图标记
+  updateMarker(id);
   updatePlanTab();
-  if(currentTab==='plan') renderPlan();
+  if (currentTab==='plan') renderPlan();
 }
 
-function clearAll(){
-  if(confirm('确认清空所有已选景点及自定义设置？')){
+function clearAll() {
+  if (confirm('确认清空所有已选景点及自定义设置？')) {
     selected.clear(); priOverrides.clear(); daysOverrides.clear();
-    updateHash(); renderCards(); renderPlan();
+    updateHash(); renderCards(); renderPlan(); updateAllMarkers();
   }
 }
 
 // ── 行程页 ────────────────────────────────────────────
-function renderPlan(){
-  const items=DATA.filter(d=>selected.has(d.id));
-  const totalDays=items.reduce((s,d)=>s+getDays(d),0);
-  document.getElementById('stats').innerHTML=[
-    ["景点数量",items.length+" 处"],
-    ["合计天数","约 "+totalDays+" 天"],
-    ["剩余天数","约 "+Math.max(0,30-totalDays)+" 天"]
+function renderPlan() {
+  const items = DATA.filter(d=>selected.has(d.id));
+  const totalDays = items.reduce((s,d)=>s+getDays(d),0);
+  document.getElementById('stats').innerHTML = [
+    ["景点数量", items.length+" 处"],
+    ["合计天数", "约 "+totalDays+" 天"],
+    ["剩余天数", "约 "+Math.max(0,30-totalDays)+" 天"]
   ].map(([l,v])=>`<div class="stat"><div class="stat-label">${l}</div><div class="stat-val">${v}</div></div>`).join('');
-  const warn=document.getElementById('warn-over');
-  if(totalDays>30){ warn.style.display=''; warn.textContent=`⚠ 当前选择合计 ${totalDays} 天，超出1个月预算，建议精简行程。`; }
+  const warn = document.getElementById('warn-over');
+  if (totalDays>30) { warn.style.display=''; warn.textContent=`⚠ 当前选择合计 ${totalDays} 天，超出1个月预算，建议精简行程。`; }
   else warn.style.display='none';
-  const empty=document.getElementById('plan-empty');
-  const list=document.getElementById('plan-list');
-  if(!items.length){ empty.style.display=''; list.innerHTML=''; return; }
+  const empty = document.getElementById('plan-empty');
+  const list  = document.getElementById('plan-list');
+  if (!items.length) { empty.style.display=''; list.innerHTML=''; return; }
   empty.style.display='none';
   let html='';
   REGION_ORDER.forEach(r=>{
-    const ri=items.filter(d=>d.region===r);
-    if(!ri.length) return;
-    html+=`<div class="region-head">${r}</div>`;
+    const ri = items.filter(d=>d.region===r);
+    if (!ri.length) return;
+    html += `<div class="region-head">${r}</div>`;
     ri.forEach(d=>{
       const pri=getPri(d), days=getDays(d);
-      html+=`<div class="plan-row">
+      html += `<div class="plan-row">
         <div style="flex:1"><span class="plan-city">${d.city}</span><span class="plan-city-en">${d.cityEn}</span><span class="plan-country">${d.country} ${d.countryEn}</span></div>
         <span class="pri-select pri-${pri}" style="font-size:11px;padding:2px 7px;border-radius:4px;display:inline-block">${PRI_LABEL[pri]}</span>
         <span class="plan-days">${days}天</span>
@@ -316,34 +380,38 @@ function renderPlan(){
       </div>`;
     });
   });
-  list.innerHTML=html;
+  list.innerHTML = html;
 }
 
 // ── 分享 ──────────────────────────────────────────────
-function copyLink(){
-  navigator.clipboard.writeText(location.href).then(()=>toast('链接已复制，发给同行的人吧！')).catch(()=>prompt('复制以下链接：',location.href));
+function copyLink() {
+  navigator.clipboard.writeText(location.href)
+    .then(()=>toast('链接已复制，发给同行的人吧！'))
+    .catch(()=>prompt('复制以下链接：', location.href));
 }
 
-function copyText(){
-  const items=DATA.filter(d=>selected.has(d.id));
-  if(!items.length){ toast('还没有选择任何景点'); return; }
-  const totalDays=items.reduce((s,d)=>s+getDays(d),0);
-  let text=`🗺 2026Summer-trip（约${totalDays}天）\n\n`;
+function copyText() {
+  const items = DATA.filter(d=>selected.has(d.id));
+  if (!items.length) { toast('还没有选择任何景点'); return; }
+  const totalDays = items.reduce((s,d)=>s+getDays(d),0);
+  let text = `🗺 2026Summer-trip（约${totalDays}天）\n\n`;
   REGION_ORDER.forEach(r=>{
-    const ri=items.filter(d=>d.region===r);
-    if(!ri.length) return;
-    text+=`【${r}】\n`;
+    const ri = items.filter(d=>d.region===r);
+    if (!ri.length) return;
+    text += `【${r}】\n`;
     ri.forEach(d=>text+=`  · ${d.city} (${d.cityEn})，${d.country}，${getDays(d)}天 — ${PRI_LABEL[getPri(d)]}\n`);
-    text+='\n';
+    text += '\n';
   });
-  text+=`分享链接：${location.href}`;
-  navigator.clipboard.writeText(text).then(()=>toast('行程文字已复制！')).catch(()=>prompt('复制：',text));
+  text += `分享链接：${location.href}`;
+  navigator.clipboard.writeText(text)
+    .then(()=>toast('行程文字已复制！'))
+    .catch(()=>prompt('复制：', text));
 }
 
-function toast(msg){
-  const el=document.getElementById('toast');
+function toast(msg) {
+  const el = document.getElementById('toast');
   el.textContent=msg; el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),2500);
+  setTimeout(()=>el.classList.remove('show'), 2500);
 }
 
 // ── 初始化 ────────────────────────────────────────────
