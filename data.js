@@ -493,4 +493,161 @@ const DATA = [
       {name:"湖上渡船",note:"免费摆渡船串联上下湖区，节省体力"},
     ]
   },
+
+  // ── 德国 ─────────────────────────────────────────────
+  {
+    id:34, city:"柏林", cityEn:"Berlin",
+    country:"德国", countryEn:"Germany", region:"德国",
+    days:3, cats:["历史","文化","艺术"], pri:"A",
+    coords:[52.5200,13.4050],
+    unique:"冷战历史最密集的城市：勃兰登堡门、柏林墙遗址、大屠杀纪念碑；同时是欧洲最活跃的当代艺术与夜生活之都",
+    spotsPreview:["🧱 柏林墙东画廊","🏛 博物馆岛","🚪 勃兰登堡门"],
+    spotsDetail:[
+      {name:"柏林墙东画廊 East Side Gallery", note:"1.3公里保存最长的柏林墙原址，覆盖百幅国际艺术家壁画"},
+      {name:"博物馆岛 Museumsinsel", note:"5座世界级博物馆密集于施普雷河岛上，UNESCO世界遗产"},
+      {name:"勃兰登堡门 Brandenburg Gate", note:"普鲁士古典主义地标，德国统一的象征"},
+      {name:"大屠杀纪念碑 Holocaust Memorial", note:"2711根高低起伏的混凝土柱，震撼人心的历史反思空间"},
+      {name:"查理检查站 Checkpoint Charlie", note:"冷战时期美苏对峙的边境口，附近博物馆还原历史现场"},
+    ]
+  },
+  {
+    id:35, city:"慕尼黑", cityEn:"Munich",
+    country:"德国", countryEn:"Germany", region:"德国",
+    days:2, cats:["文化","历史","美食"], pri:"A",
+    coords:[48.1351,11.5820],
+    unique:"巴伐利亚首府，英式花园（市内河浪冲浪）、德意志博物馆、宝马博物馆；南部线路天然枢纽，前往新天鹅堡和阿尔卑斯山的出发基地",
+    spotsPreview:["🍺 玛利亚广场","🏎 宝马博物馆","🌊 英式花园冲浪"],
+    spotsDetail:[
+      {name:"玛利亚广场 Marienplatz", note:"慕尼黑市中心，新市政厅钟楼每天定时上演人偶表演"},
+      {name:"英式花园 Englischer Garten", note:"比纽约中央公园还大，园内河道有人全年冲浪，全球最奇景之一"},
+      {name:"宝马博物馆 BMW Museum", note:"品牌历史与未来概念车展览，建筑本身即是雕塑"},
+      {name:"德意志博物馆 Deutsches Museum", note:"全球最大科技博物馆，展品涵盖航天、采矿、乐器"},
+      {name:"尼芬堡宫 Nymphenburg Palace", note:"巴洛克夏宫与庄园，慕尼黑最宏伟的宫廷建筑"},
+    ]
+  },
+  {
+    id:36, city:"新天鹅堡", cityEn:"Neuschwanstein",
+    country:"德国", countryEn:"Germany", region:"德国",
+    days:1, cats:["历史","建筑","自然"], pri:"A",
+    coords:[47.5576,10.7498],
+    unique:"迪士尼城堡的直接原型，疯王路德维希二世的未竟之作，坐落于阿尔卑斯山前翠谷之中，全球辨识度最高的城堡建筑",
+    spotsPreview:["🏰 城堡内部导览","🌉 玛利亚桥俯瞰","🏔 阿尔卑斯山景"],
+    spotsDetail:[
+      {name:"城堡内部导览", note:"须提前网上购票，导览约35分钟，内部壁画描绘瓦格纳歌剧场景"},
+      {name:"玛利亚桥 Marienbrücke", note:"城堡上方的铁桥，是拍摄城堡全景最经典的机位，需步行约20分钟"},
+      {name:"霍恩施旺高城堡 Hohenschwangau", note:"路德维希二世童年成长的黄色城堡，与新天鹅堡相距步行15分钟"},
+    ]
+  },
+  {
+    id:37, city:"莱茵河谷", cityEn:"Rhine Valley",
+    country:"德国", countryEn:"Germany", region:"德国",
+    days:2, cats:["自然","历史","建筑"], pri:"A",
+    coords:[50.2592,7.5982],
+    unique:"科布伦茨至宾根段两岸密布中世纪古堡与葡萄园（UNESCO），乘火车或游船穿越是德国最独特的旅行体验之一",
+    spotsPreview:["⛵ 游船穿越河谷","🏰 猫堡与鼠堡","🍷 雷司令葡萄酒"],
+    spotsDetail:[
+      {name:"游船 KD Rhine Cruise", note:"科布伦茨至吕德斯海姆全程约5小时，沿途30余座古堡"},
+      {name:"猫堡与鼠堡 Katz & Maus", note:"隔河对峙的两座中世纪城堡，莱茵河谷最具戏剧感的古堡组合"},
+      {name:"罗蕾莱礁石 Loreley", note:"传说中女妖歌声令船夫迷失的岩石，河道最狭窄处，景色壮观"},
+      {name:"吕德斯海姆 Rüdesheim", note:"河谷南端的葡萄酒小镇，雷司令白葡萄酒产区核心"},
+      {name:"科布伦茨 Koblenz", note:"莱茵河与摩泽尔河交汇处，德意志之角纪念碑所在地"},
+    ]
+  },
+  {
+    id:38, city:"罗滕堡", cityEn:"Rothenburg ob der Tauber",
+    country:"德国", countryEn:"Germany", region:"德国",
+    days:1, cats:["历史","建筑","文化"], pri:"A",
+    coords:[49.3774,10.1823],
+    unique:"德国保存最完好的中世纪小镇，完整城墙环绕、石板路迷宫、圣诞主题商店全年营业，像走进中世纪童话",
+    spotsPreview:["🏘 市集广场","🧱 古城墙步道","🎄 圣诞村"],
+    spotsDetail:[
+      {name:"市集广场 Marktplatz", note:"市政厅与议员酒馆围合的中世纪广场，整点有人偶故事表演"},
+      {name:"古城墙步道 Stadtmauer", note:"沿城墙顶部步道环绕一圈约2小时，可俯瞰红瓦屋顶全景"},
+      {name:"圣诞村 Käthe Wohlfahrt", note:"全年经营的圣诞主题商店，号称世界最大圣诞装饰专卖店"},
+      {name:"中世纪犯罪博物馆", note:"展示中世纪刑具与法律文件，猎奇又有历史深度"},
+    ]
+  },
+  {
+    id:39, city:"海德堡", cityEn:"Heidelberg",
+    country:"德国", countryEn:"Germany", region:"德国",
+    days:1, cats:["历史","建筑","文化"], pri:"B",
+    coords:[49.3988,8.6724],
+    unique:"德国最浪漫的大学城，内卡河畔的红砂岩城堡废墟与老桥构成经典画面，歌德与马克·吐温都曾为之倾倒",
+    spotsPreview:["🏯 海德堡城堡","🌉 老桥","🎓 海德堡大学"],
+    spotsDetail:[
+      {name:"海德堡城堡 Heidelberger Schloss", note:"13-17世纪红砂岩宫殿废墟，缆车可达，俯瞰内卡河谷最佳点"},
+      {name:"老桥 Alte Brücke", note:"18世纪石拱桥，桥头有猴子铜像，是海德堡的城市符号"},
+      {name:"哲学家小道 Philosophenweg", note:"河对岸山腰步道，春季樱花盛开时可远眺城堡全景"},
+      {name:"海德堡大学 Ruprecht-Karls", note:"德国最古老大学（1386年），老城内有学生监狱可参观"},
+    ]
+  },
+  {
+    id:40, city:"黑森林", cityEn:"Black Forest",
+    country:"德国", countryEn:"Germany", region:"德国",
+    days:2, cats:["自然","文化"], pri:"B",
+    coords:[48.2049,8.1587],
+    unique:"7月徒步穿越茂密云杉林避暑，格林童话（白雪公主、灰姑娘）的灵感发源地，黑森林蛋糕与布谷鸟钟的产地",
+    spotsPreview:["🌲 徒步小径","⌚ 布谷鸟钟","🍰 黑森林蛋糕"],
+    spotsDetail:[
+      {name:"蒂蒂湖 Titisee", note:"火山口湖，夏季游泳划船，湖畔小镇布满纪念品店"},
+      {name:"特里贝格瀑布 Triberg Falls", note:"德国落差最大的瀑布，布谷鸟钟工坊集中在小镇内"},
+      {name:"弗莱堡 Freiburg", note:"黑森林门户城市，哥特式大教堂与小水渠（Bächle）穿越老城"},
+      {name:"巴登巴登 Baden-Baden", note:"欧洲顶级温泉度假城，罗马式浴场卡拉卡拉与弗里德里希温泉"},
+    ]
+  },
+  {
+    id:41, city:"德累斯顿", cityEn:"Dresden",
+    country:"德国", countryEn:"Germany", region:"德国",
+    days:1, cats:["历史","建筑","艺术"], pri:"B",
+    coords:[51.0504,13.7373],
+    unique:"「易北河上的佛罗伦萨」，二战几乎夷为平地后原样重建的巴洛克天际线，茨温格宫与圣母教堂是德国战后重建意志的象征",
+    spotsPreview:["🏛 茨温格宫","⛪ 圣母教堂","🎨 老大师画廊"],
+    spotsDetail:[
+      {name:"茨温格宫 Zwinger", note:"18世纪巴洛克宫殿庭院，内有瓷器收藏与老大师画廊"},
+      {name:"圣母教堂 Frauenkirche", note:"二战炸毁后于2005年重建完成，穹顶可登，新旧石料颜色差异清晰可见"},
+      {name:"老大师画廊 Gemäldegalerie", note:"拉斐尔《西斯廷圣母》原作所在地，文艺复兴绘画珍藏"},
+      {name:"布吕尔平台 Brühlsche Terrasse", note:"易北河畔的「欧洲阳台」，俯瞰河对岸新城区"},
+    ]
+  },
+  {
+    id:42, city:"汉堡", cityEn:"Hamburg",
+    country:"德国", countryEn:"Germany", region:"德国",
+    days:1, cats:["文化","建筑","历史"], pri:"C",
+    coords:[53.5511,9.9937],
+    unique:"德国最重要的港口城市，「世界桥城」（桥梁数量超过威尼斯与阿姆斯特丹之和），仓库城UNESCO，汉堡甲壳虫乐队发源地",
+    spotsPreview:["🏗 仓库城","🎵 甲壳虫酒吧街","🚢 港口游船"],
+    spotsDetail:[
+      {name:"仓库城 Speicherstadt", note:"19世纪红砖仓库建筑群，UNESCO，现已改造为博物馆与创意办公区"},
+      {name:"易北爱乐厅 Elbphilharmonie", note:"玻璃波浪造型音乐厅，顶层观景台免费开放，城市新地标"},
+      {name:"港口城 HafenCity", note:"欧洲最大内城重建项目，仍在开发中的现代城区"},
+      {name:"汉堡贝伦大街 Reeperbahn", note:"甲壳虫乐队早年演出的圣保利娱乐区，有披头士纪念馆"},
+    ]
+  },
+  {
+    id:43, city:"斯图加特", cityEn:"Stuttgart",
+    country:"德国", countryEn:"Germany", region:"德国",
+    days:1, cats:["文化","历史"], pri:"C",
+    coords:[48.7758,9.1829],
+    unique:"奔驰与保时捷的故乡，两家汽车博物馆是全球同类中最好的；作为法兰克福至瑞士的过境城市顺道参观最为合适",
+    spotsPreview:["🚗 奔驰博物馆","🏎 保时捷博物馆","🍷 符腾堡葡萄酒"],
+    spotsDetail:[
+      {name:"梅赛德斯·奔驰博物馆", note:"螺旋形建筑内展示160余年汽车历史，即便不是车迷也值得一看"},
+      {name:"保时捷博物馆 Porsche Museum", note:"浮于空中的白色建筑，80余辆原型车与赛车展览"},
+      {name:"符腾堡州立博物馆", note:"老城宫殿内，凯尔特文物与符腾堡王室历史"},
+    ]
+  },
+  {
+    id:44, city:"博登湖", cityEn:"Lake Constance",
+    country:"德国", countryEn:"Germany", region:"德国",
+    days:2, cats:["自然","文化"], pri:"C",
+    coords:[47.6779,9.1743],
+    unique:"德国、奥地利、瑞士三国共享的内陆海，湖畔花岛梅瑙与菲尔斯滕岛修道院是湖区亮点；适合慢节奏度假而非紧凑行程",
+    spotsPreview:["🌸 梅瑙花岛","⛪ 菲尔斯滕岛","⛵ 湖上游船"],
+    spotsDetail:[
+      {name:"梅瑙花岛 Mainau", note:"面积45公顷的花卉岛屿，6-7月玫瑰与大丽花盛开"},
+      {name:"菲尔斯滕岛 Reichenau", note:"湖中小岛，三座罗马式教堂，UNESCO世界遗产"},
+      {name:"康斯坦茨 Konstanz", note:"湖畔最大城市，中世纪老城，二战因靠近瑞士未遭轰炸而保存完好"},
+      {name:"林道 Lindau", note:"湖中小岛城市，狮子灯塔是博登湖最具代表性的地标"},
+    ]
+  },
 ];
